@@ -1,6 +1,7 @@
 package com.devandre.petsnetwork.exception.response;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import jakarta.validation.ConstraintViolation;
 import lombok.Data;
 import org.hibernate.validator.internal.engine.path.PathImpl;
@@ -14,6 +15,7 @@ import java.util.List;
 import java.util.Set;
 
 @Data
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class ApiError {
 
     private HttpStatus status;

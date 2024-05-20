@@ -61,9 +61,13 @@ public class Pet extends BaseEntity {
 
     private boolean isNeutered;
 
-    private Integer adoptedBy;
+    private Long adoptedBy;
 
     private String picture;
+
+    @ManyToOne
+    @JoinColumn(name = "owner_id")
+    private User owner;
 
     @OneToMany(mappedBy = "pet")
     private List<Comment> comments;

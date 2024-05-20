@@ -14,7 +14,7 @@ import lombok.experimental.SuperBuilder;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "pets")
+@Table(name = "adoption_application")
 public class AdoptionApplication extends BaseEntity {
 
     @Id

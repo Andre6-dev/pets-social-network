@@ -1,7 +1,10 @@
 package com.devandre.petsnetwork.exception;
 
+import com.devandre.petsnetwork.exception.customexceptions.ActivationTokenException;
 import com.devandre.petsnetwork.exception.customexceptions.EntityNotFoundException;
+import com.devandre.petsnetwork.exception.customexceptions.OperationNotPermittedException;
 import com.devandre.petsnetwork.exception.response.ApiError;
+import jakarta.mail.MessagingException;
 import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.Ordered;
@@ -13,6 +16,9 @@ import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.http.converter.HttpMessageNotWritableException;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.DisabledException;
+import org.springframework.security.authentication.LockedException;
 import org.springframework.web.HttpMediaTypeNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
@@ -214,9 +220,101 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
     protected ResponseEntity<Object> handleMethodArgumentTypeMismatch(MethodArgumentTypeMismatchException ex,
                                                                       WebRequest request) {
+        log.error("Method argument type mismatch: {}", ex.getMessage());
         ApiError apiError = new ApiError(BAD_REQUEST);
         apiError.setMessage(String.format("The parameter '%s' of value '%s' could not be converted to type '%s'", ex.getName(), ex.getValue(), ex.getRequiredType().getSimpleName()));
         apiError.setDebugMessage(ex.getMessage());
         return buildResponseEntity(apiError);
     }
+
+    /**
+     * Handle LockedException, handle account locked exceptions
+     *
+     * @param ex the LockedException
+     * @return the ApiError object
+     */
+    @ExceptionHandler(LockedException.class)
+    protected ResponseEntity<Object> handleLockedException(LockedException ex) {
+        log.error("Account locked: {}", ex.getMessage());
+        ApiError apiError = new ApiError(HttpStatus.UNAUTHORIZED);
+        apiError.setMessage("Account locked");
+        apiError.setDebugMessage(ex.getMessage());
+        return buildResponseEntity(apiError);
+    }
+
+    /**
+     * Handle DisabledException, handle account disabled exceptions
+     *
+     * @param ex the DisabledException
+     * @return the ApiError object
+     */
+    @ExceptionHandler(DisabledException.class)
+    protected ResponseEntity<Object> handleDisabledException(DisabledException ex) {
+        log.error("Account disabled: {}", ex.getMessage());
+        ApiError apiError = new ApiError(HttpStatus.UNAUTHORIZED);
+        apiError.setMessage("Account disabled");
+        apiError.setDebugMessage(ex.getMessage());
+        return buildResponseEntity(apiError);
+    }
+
+    /**
+     * Handle BadCredentialsException, handle bad credentials exceptions
+     *
+     * @param ex the BadCredentialsException
+     * @return the ApiError object
+     */
+    @ExceptionHandler(BadCredentialsException.class)
+    protected ResponseEntity<Object> handleBadCredentialsException(BadCredentialsException ex) {
+        log.error("Bad credentials: {}", ex.getMessage());
+        ApiError apiError = new ApiError(HttpStatus.UNAUTHORIZED);
+        apiError.setMessage("Bad credentials: Login and / or Password is incorrect");
+        apiError.setDebugMessage(ex.getMessage());
+        return buildResponseEntity(apiError);
+    }
+
+    /**
+     * Handle MessagingException, handle messaging exceptions
+     *
+     * @param ex the MessagingException
+     * @return the ApiError object
+     */
+    @ExceptionHandler(MessagingException.class)
+    protected ResponseEntity<Object> handleMessagingException(MessagingException ex) {
+        log.error("Messaging exception: {}", ex.getMessage());
+        ApiError apiError = new ApiError(HttpStatus.INTERNAL_SERVER_ERROR);
+        apiError.setMessage("Messaging exception");
+        apiError.setDebugMessage(ex.getMessage());
+        return buildResponseEntity(apiError);
+    }
+
+    /**
+     * Handle ActivationTokenException, handle activation token exceptions
+     *
+     * @param ex the ActivationTokenException
+     * @return the ApiError object
+     */
+    @ExceptionHandler(ActivationTokenException.class)
+    protected ResponseEntity<Object> handleActivationTokenException(ActivationTokenException ex) {
+        log.error("Activation token exception: {}", ex.getMessage());
+        ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST);
+        apiError.setMessage("Activation token exception");
+        apiError.setDebugMessage(ex.getMessage());
+        return buildResponseEntity(apiError);
+    }
+
+    /**
+     * Handle OperationNotPermittedException, handle operation not permitted exceptions
+     *
+     * @param ex the OperationNotPermittedException
+     * @return the ApiError object
+     */
+    @ExceptionHandler(OperationNotPermittedException.class)
+    protected ResponseEntity<Object> handleOperationNotPermittedException(OperationNotPermittedException ex) {
+        log.error("Operation not permitted: {}", ex.getMessage());
+        ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST);
+        apiError.setMessage("Operation not permitted");
+        apiError.setDebugMessage(ex.getMessage());
+        return buildResponseEntity(apiError);
+    }
+
 }
