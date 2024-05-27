@@ -41,11 +41,11 @@ public class PetController {
         );
     }
 
-    @GetMapping("/test")
-    public ResponseEntity<Object> test() {
+    @GetMapping
+    public ResponseEntity<Object> getAllPets() {
         return ControllerResponseHandler.response(
                 HttpStatus.OK,
-                "Test API",
+                service.getAllPets(),
                 true
         );
     }

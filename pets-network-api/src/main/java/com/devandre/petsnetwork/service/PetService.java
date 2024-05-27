@@ -1,5 +1,6 @@
 package com.devandre.petsnetwork.service;
 
+import com.devandre.petsnetwork.common.PageResponse;
 import com.devandre.petsnetwork.domain.Pet;
 import com.devandre.petsnetwork.domain.User;
 import com.devandre.petsnetwork.dto.request.PetRegistrationRequest;
@@ -39,5 +40,13 @@ public class PetService {
         Pet pet = petRepository.findById(petId)
                 .orElseThrow(() -> new EntityNotFoundException("Pet not found"));
         return petMapper.toPetResponseId(pet);
+    }
+
+    public PageResponse<PetResponse> getAllPets(int page, int size, Authentication connectedUser) {
+        log.info("Starting to retrieve all pets");
+        log.info("Request: Connected user: {}", connectedUser, "Page: {}", page, "Size: {}", size);
+
+
+        return null;
     }
 }
